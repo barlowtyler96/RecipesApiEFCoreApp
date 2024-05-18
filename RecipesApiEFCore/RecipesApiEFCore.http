@@ -1,0 +1,6 @@
+@RecipesApiEFCore_HostAddress = http://localhost:5260
+
+GET {{RecipesApiEFCore_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
