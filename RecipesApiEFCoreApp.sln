@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34902.65
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipesApiEFCore", "RecipesApiEFCore\RecipesApiEFCore.csproj", "{307D9C78-0C63-437E-B61A-E4393DD22F9A}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeLibraryEFCore", "..\RecipeLibraryEFCore\RecipeLibraryEFCore\RecipeLibraryEFCore.csproj", "{DC8E4922-1DFB-4213-8044-86B3C7F626DD}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RecipeLibraryEFCore", "RecipeLibraryEFCore\RecipeLibraryEFCore\RecipeLibraryEFCore.csproj", "{3CE8BBA6-E943-4A3A-B0BA-FFB137955F64}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +17,10 @@ Global
 		{307D9C78-0C63-437E-B61A-E4393DD22F9A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{307D9C78-0C63-437E-B61A-E4393DD22F9A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{307D9C78-0C63-437E-B61A-E4393DD22F9A}.Release|Any CPU.Build.0 = Release|Any CPU
-		{DC8E4922-1DFB-4213-8044-86B3C7F626DD}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{DC8E4922-1DFB-4213-8044-86B3C7F626DD}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{DC8E4922-1DFB-4213-8044-86B3C7F626DD}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{DC8E4922-1DFB-4213-8044-86B3C7F626DD}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3CE8BBA6-E943-4A3A-B0BA-FFB137955F64}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3CE8BBA6-E943-4A3A-B0BA-FFB137955F64}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3CE8BBA6-E943-4A3A-B0BA-FFB137955F64}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3CE8BBA6-E943-4A3A-B0BA-FFB137955F64}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
