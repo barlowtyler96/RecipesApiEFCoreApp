@@ -1,12 +1,16 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using RecipeLibraryEFCore.DataAccess;
+using RecipeLibraryEFCore.Models;
 
 
 namespace RecipesApiEFCore.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class RecipesController : ControllerBase
+public class RecipesController(IRecipeData data) : ControllerBase
 {
+    private readonly IRecipeData _data = data;
+
     // GET: api/<RecipesController>
     [HttpGet]
     public IEnumerable<string> Get()
@@ -16,15 +20,20 @@ public class RecipesController : ControllerBase
 
     // GET api/<RecipesController>/5
     [HttpGet("{id}")]
-    public string Get(int id)
+    public async Task<Recipe> Get(int id)
     {
-        return "value";
+        Recipe recipe = await _data.GetById(id);
+        Console.WriteLine(recipe.RecipeIngredients[0].Ingredient.Name);
+        Console.WriteLine(recipe.RecipeIngredients[0].Ingredient.Unit);
+        Console.WriteLine(recipe.RecipeIngredients[0].Amount);
+        return recipe;
     }
 
     // POST api/<RecipesController>
     [HttpPost]
-    public void Post([FromBody] string value)
+    public async Task Post()
     {
+        await _data.AddRecipeAsync();
     }
 
     // PUT api/<RecipesController>/5
