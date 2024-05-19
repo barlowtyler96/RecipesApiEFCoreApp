@@ -1,5 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 using RecipeLibraryEFCore.DataAccess;
+using RecipesApiEFCore.DependencyInjectionExtentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -8,10 +9,15 @@ builder.Services.AddDbContext<RecipeContext>(options =>
 {
     options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
 });
+builder.AddCustomServices();
 
-builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddControllers()
+    .AddJsonOptions(options =>
+    {
+        options.JsonSerializerOptions.ReferenceHandler = System.Text.Json.Serialization.ReferenceHandler.IgnoreCycles;
+        
+    });
+
 builder.Services.AddSwaggerGen();
 
 var app = builder.Build();
