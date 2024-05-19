@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace RecipeLibraryEFCore.Models;
 
@@ -13,6 +14,8 @@ public class Ingredient
 
     [MaxLength(100)]
     public string? Unit { get; set; }
-    public List<Recipe> Recipes { get; set; } = [];
+
+    [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
+    public List<RecipeIngredient> RecipeIngredients { get; set; }
 
 }

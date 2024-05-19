@@ -18,5 +18,5 @@ public class User
     [MaxLength(100)]
     [Required]
     public string? LastName { get; set; }
-    public List<Recipe> FavoriteRecipes { get; set; } = [];
+    public List<UserFavorite> UserFavorites { get; set; }
 }

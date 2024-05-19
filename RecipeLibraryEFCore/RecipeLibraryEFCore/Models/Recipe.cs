@@ -1,4 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace RecipeLibraryEFCore.Models;
 
@@ -26,8 +27,10 @@ public class Recipe
     [MaxLength(200)]
     public string? ImageUrl { get; set; }
 
-    public List<Ingredient> Ingredients { get; set; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<RecipeIngredient> RecipeIngredients { get; set; }
 
-    public List<User> FavoritedUsers { get; set; } = [];
+    [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
+    public List<UserFavorite> UserFavorites { get; set; }
 
 }
