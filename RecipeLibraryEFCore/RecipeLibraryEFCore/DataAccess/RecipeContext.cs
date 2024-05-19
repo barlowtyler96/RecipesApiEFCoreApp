@@ -3,13 +3,8 @@ using RecipeLibraryEFCore.Models;
 
 namespace RecipeLibraryEFCore.DataAccess;
 
-public class RecipeContext : DbContext
+public class RecipeContext(DbContextOptions<RecipeContext> options) : DbContext(options)
 {
-    public RecipeContext(DbContextOptions<RecipeContext> options)
-        : base(options)
-    {
-    }
-
     public DbSet<Recipe> Recipes { get; set; }
     public DbSet<Ingredient> Ingredients { get; set; }
     public DbSet<RecipeIngredient> RecipeIngredients { get; set; }
@@ -18,14 +13,30 @@ public class RecipeContext : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        modelBuilder.Entity<Recipe>()
-            .HasMany(e => e.Ingredients)
-            .WithMany(e => e.Recipes)
-            .UsingEntity<RecipeIngredient>();
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasKey(ri => new { ri.RecipeId, ri.IngredientId });
 
-        modelBuilder.Entity<Recipe>()
-            .HasMany(e => e.FavoritedUsers)
-            .WithMany(e => e.FavoriteRecipes)
-            .UsingEntity<UserFavorite>();
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasOne(ri => ri.Recipe)
+            .WithMany(r => r.RecipeIngredients)
+            .HasForeignKey(ri => ri.RecipeId);
+
+        modelBuilder.Entity<RecipeIngredient>()
+            .HasOne(ri => ri.Ingredient)
+            .WithMany(i => i.RecipeIngredients)
+            .HasForeignKey(ri => ri.IngredientId);
+
+        modelBuilder.Entity<UserFavorite>()
+            .HasKey(uf => new { uf.UserId, uf.RecipeId });
+
+        modelBuilder.Entity<UserFavorite>()
+            .HasOne(uf => uf.User)
+            .WithMany(u => u.UserFavorites)
+            .HasForeignKey(uf => uf.UserId);
+
+        modelBuilder.Entity<UserFavorite>()
+            .HasOne(uf => uf.Recipe)
+            .WithMany(r => r.UserFavorites)
+            .HasForeignKey(uf => uf.RecipeId);
     }
 }
