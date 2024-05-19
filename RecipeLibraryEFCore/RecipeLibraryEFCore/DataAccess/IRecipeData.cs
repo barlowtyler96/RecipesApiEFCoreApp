@@ -4,9 +4,9 @@ namespace RecipeLibraryEFCore.DataAccess
 {
     public interface IRecipeData
     {
-        Task<PaginationResponse<List<Recipe>>> GetAllRecipes(int currentPageNumber, int pageSize);
+        Task<PaginationResponse<List<Recipe>>> GetAllRecipesAsync(int currentPageNumber, int pageSize);
         Task<PaginationResponse<List<Recipe>>> GetByDate(int currentPageNumber, int pageSize);
-        Task<Recipe> GetById(int id);
+        Task<Recipe> GetByIdAsync(int id);
         Task<PaginationResponse<List<Recipe>>> GetByKeyword(string keyword, int currentPageNumber, int pageSize);
         Task AddRecipeAsync();
     }

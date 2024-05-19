@@ -7,7 +7,7 @@ public class RecipeData(RecipeContext context) : IRecipeData
     private readonly RecipeContext _context = context;
 
     //GET
-    public async Task<Recipe> GetById(int id)
+    public async Task<Recipe> GetByIdAsync(int id)
     {
         var recipeResponse = await _context.Recipes
             .Include(r => r.RecipeIngredients)
@@ -17,13 +17,21 @@ public class RecipeData(RecipeContext context) : IRecipeData
     }
 
     //GET
-    public async Task<PaginationResponse<List<Recipe>>> GetAllRecipes(int currentPageNumber, int pageSize)
+    public async Task<PaginationResponse<List<Recipe>>> GetAllRecipesAsync(int currentPageNumber, int pageSize)
     {
         int skip = (currentPageNumber - 1) * pageSize;
         int take = pageSize;
 
+        int totalCount = await _context.Recipes.CountAsync();
+        List<Recipe> recipesResponse = await _context.Recipes
+            .Include(r => r.RecipeIngredients)
+                .ThenInclude(ri => ri.Ingredient)
+            .Take(take)
+            .Skip(skip)
+            .ToListAsync();
 
-        throw new NotImplementedException();
+        PaginationResponse<List<Recipe>> paginationResponse = new(totalCount, pageSize, currentPageNumber, recipesResponse);
+        return paginationResponse;
     }
 
     //GET
@@ -51,7 +59,7 @@ public class RecipeData(RecipeContext context) : IRecipeData
             Description = "A delicious chocolate cake recipe",
             Instructions = "Mix ingredients and bake",
             CreatedBy = "Tyler",
-            CreatedOn = DateTime.Now,
+            CreatedOn = DateTime.UtcNow,
             ImageUrl = "myimg.com",
             RecipeIngredients = new List<RecipeIngredient>()
         };
