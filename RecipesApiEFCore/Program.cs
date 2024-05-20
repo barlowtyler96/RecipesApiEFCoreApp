@@ -1,14 +1,8 @@
-using Microsoft.EntityFrameworkCore;
-using RecipeLibraryEFCore.DataAccess;
 using RecipesApiEFCore.DependencyInjectionExtentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
-builder.Services.AddDbContext<RecipeContext>(options =>
-{
-    options.UseSqlServer(builder.Configuration.GetConnectionString("Default"));
-});
+builder.AddEFCoreServices();
 builder.AddCustomServices();
 
 builder.Services.AddControllers()
