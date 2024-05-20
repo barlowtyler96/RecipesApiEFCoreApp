@@ -8,6 +8,6 @@ namespace RecipeLibraryEFCore.DataAccess
         Task<PaginationResponse<List<Recipe>>> GetByDate(int currentPageNumber, int pageSize);
         Task<Recipe> GetByIdAsync(int id);
         Task<PaginationResponse<List<Recipe>>> GetByKeyword(string keyword, int currentPageNumber, int pageSize);
-        Task AddRecipeAsync();
+        Task AddRecipeAsync(Recipe newRecipe);
     }
 }

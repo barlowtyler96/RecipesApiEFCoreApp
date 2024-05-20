@@ -51,63 +51,28 @@ public class RecipeData(RecipeContext context) : IRecipeData
         throw new NotImplementedException();
     }
 
-    public async Task AddRecipeAsync()
+    public async Task AddRecipeAsync(Recipe newRecipe)
     {
-        var recipe = new Recipe
+        foreach (var recipeIngredient in newRecipe.RecipeIngredients)
         {
-            Name = "Chocolate Cake",
-            Description = "A delicious chocolate cake recipe",
-            Instructions = "Mix ingredients and bake",
-            CreatedBy = "Tyler",
-            CreatedOn = DateTime.UtcNow,
-            ImageUrl = "myimg.com",
-            RecipeIngredients = new List<RecipeIngredient>()
-        };
+            // Check if the ingredient already exists
+            var existingIngredient = await _context.Ingredients
+                .FirstOrDefaultAsync(i => i.Name == recipeIngredient.Ingredient.Name);
 
-        var ingredient1 = new Ingredient
-        {
-            Name = "Flour",
-            Unit = "cups"
-        };
+            if (existingIngredient != null)
+            {
+                // Use the existing ingredient
+                recipeIngredient.IngredientId = existingIngredient.Id;
+                recipeIngredient.Ingredient = existingIngredient;
+            }
+            else
+            {
+                // Add the new ingredient to the context
+                _context.Ingredients.Add(recipeIngredient.Ingredient);
+            }
+        }
 
-        var ingredient2 = new Ingredient
-        {
-            Name = "Sugar",
-            Unit = "cups"
-        };
-
-        var ingredient3 = new Ingredient
-        {
-            Name = "Cocoa Powder",
-            Unit = "cups"
-        };
-
-        _context.Recipes.Add(recipe);
-        _context.Ingredients.AddRange(ingredient1, ingredient2, ingredient3);
-
-        await _context.SaveChangesAsync();
-
-        recipe.RecipeIngredients.Add(new RecipeIngredient
-        {
-            RecipeId = recipe.Id,
-            IngredientId = ingredient1.Id,
-            Amount = 2.0
-        });
-
-        recipe.RecipeIngredients.Add(new RecipeIngredient
-        {
-            RecipeId = recipe.Id,
-            IngredientId = ingredient2.Id,
-            Amount = 1.5
-        });
-
-        recipe.RecipeIngredients.Add(new RecipeIngredient
-        {
-            RecipeId = recipe.Id,
-            IngredientId = ingredient3.Id,
-            Amount = 1.0
-        });
-
+        _context.Recipes.Add(newRecipe);
         await _context.SaveChangesAsync();
     }
 }
