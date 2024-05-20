@@ -38,5 +38,9 @@ public class RecipeContext(DbContextOptions<RecipeContext> options) : DbContext(
             .HasOne(uf => uf.Recipe)
             .WithMany(r => r.UserFavorites)
             .HasForeignKey(uf => uf.RecipeId);
+
+        modelBuilder.Entity<Ingredient>()
+        .HasIndex(i => i.Name)
+        .IsUnique();
     }
 }
