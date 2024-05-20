@@ -27,9 +27,11 @@ public class Recipe
     [MaxLength(200)]
     public string? ImageUrl { get; set; }
 
+    //Navigation property
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<RecipeIngredient> RecipeIngredients { get; set; }
 
+    //Navigation property
     [JsonIgnore(Condition = JsonIgnoreCondition.WhenWritingNull)]
     public List<UserFavorite> UserFavorites { get; set; }
 

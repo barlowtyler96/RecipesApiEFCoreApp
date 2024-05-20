@@ -15,6 +15,7 @@ public class Ingredient
     [MaxLength(100)]
     public string? Unit { get; set; }
 
+    //Navigation property
     [JsonIgnore(Condition = JsonIgnoreCondition.Always)]
     public List<RecipeIngredient> RecipeIngredients { get; set; }
 
