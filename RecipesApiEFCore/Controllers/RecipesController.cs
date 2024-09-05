@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 using RecipeLibraryEFCore.DataAccess;
-using RecipeLibraryEFCore.Models;
+using RecipeLibraryEFCore.Models.Dtos;
+using RecipeLibraryEFCore.Models.Entities;
 
 
 namespace RecipesApiEFCore.Controllers;
@@ -11,90 +13,58 @@ public class RecipesController(IRecipeData data) : ControllerBase
 {
     private readonly IRecipeData _data = data;
 
-    // GET: api/<RecipesController>
+    // GET: api/Recipes
     [HttpGet]
-    public async Task<PaginationResponse<List<Recipe>>> Get(int currentPageNumber, int pageSize)
+    public async Task<ActionResult<PaginationResponse<List<RecipeDto>>>> Get([FromQuery] int page, [FromQuery] int pageSize)
     {
-        return await _data.GetAllRecipesAsync(currentPageNumber, pageSize);
+        try
+        {
+            var output = await _data.GetAllRecipesAsync(page, pageSize);
+            return Ok(output);
+        }
+        catch (Exception ex)
+        {
+            return BadRequest();
+        }
     }
 
-    // GET api/<RecipesController>/5
+    // GET api/Recipes/5
     [HttpGet("{id}")]
-    public async Task<Recipe> Get(int id)
+    public async Task<ActionResult<RecipeDto>> GetById(int id)
     {
-        Recipe recipe = await _data.GetByIdAsync(id);
-        Console.WriteLine(recipe.RecipeIngredients[0].Ingredient.Name);
-        Console.WriteLine(recipe.RecipeIngredients[0].Ingredient.Unit);
-        Console.WriteLine(recipe.RecipeIngredients[0].Amount);
-        return recipe;
-    }
-
-    // POST api/<RecipesController>
-    [HttpPost]
-    public async Task Post()
-    {
-        // Create the ingredients
-        var pasta = new Ingredient
+        try
         {
-            Name = "Pasta",
-            Unit = "grams"
-        };
-
-        var tomatoes = new Ingredient
-        {
-            Name = "Tomatoes",
-            Unit = "pieces"
-        };
-
-        var oliveOil = new Ingredient
-        {
-            Name = "Olive Oil",
-            Unit = "ml"
-        };
-
-        // Create the recipe ingredients
-        var recipeIngredients = new List<RecipeIngredient>
-        {
-            new RecipeIngredient
+            var output = await _data.GetByIdAsync(id);
+            if (output == null)
             {
-                Ingredient = pasta,
-                Amount = 200
-            },
-            new RecipeIngredient
-            {
-                Ingredient = tomatoes,
-                Amount = 3
-            },
-            new RecipeIngredient
-            {
-                Ingredient = oliveOil,
-                Amount = 50
+                return NotFound(new { Message = $"Recipe with the id: {id} not found"});
             }
-        };
-
-        // Create the recipe
-        var recipe = new Recipe
+            return Ok(output);
+        }
+        catch (Exception ex)
         {
-            Name = "Potato Salad",
-            Description = "A delicious potato salad with potatoes and olive oil.",
-            Instructions = "1. Cook the potatoes. 2. Chop the tomatoes. 3. Mix everything with olive oil.",
-            CreatedBy = "Chef Tyler",
-            CreatedOn = DateTime.UtcNow,
-            ImageUrl = "http://example.com/pasta-salad2.jpg",
-            RecipeIngredients = recipeIngredients
-        };
-        await _data.AddRecipeAsync(recipe);
+            return BadRequest();
+        }
     }
 
-    // PUT api/<RecipesController>/5
-    [HttpPut("{id}")]
-    public void Put(int id, [FromBody] string value)
+    // POST api/Recipes
+    [HttpPost]
+    public async Task<ActionResult<RecipeDto>> Post([FromBody] RecipeDto newRecipeDto)
     {
+        if (!ModelState.IsValid)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var createdRecipe = await _data.AddRecipeAsync(newRecipeDto);
+        var uri = "api/Recipes/" + createdRecipe.Id;
+        return Created(uri, createdRecipe);
     }
 
-    // DELETE api/<RecipesController>/5
+    // POST api/Recipes
     [HttpDelete("{id}")]
-    public void Delete(int id)
+    public async Task Delete(int id)
     {
+        await _data.DeleteRecipeAsync(id);
     }
 }
