@@ -15,6 +15,7 @@ public static class DependencyInjectionExtensions
     public static void AddCustomServices(this WebApplicationBuilder builder)
     {
         builder.Services.AddScoped<IRecipeData, RecipeData>();
+        builder.Services.AddScoped<IUserData, UserData>();
     }
 
     public static void AddStandardServices(this WebApplicationBuilder builder)
