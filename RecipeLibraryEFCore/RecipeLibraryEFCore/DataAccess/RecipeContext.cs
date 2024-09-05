@@ -1,5 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using RecipeLibraryEFCore.Models;
+using RecipeLibraryEFCore.Models.Entities;
 
 namespace RecipeLibraryEFCore.DataAccess;
 

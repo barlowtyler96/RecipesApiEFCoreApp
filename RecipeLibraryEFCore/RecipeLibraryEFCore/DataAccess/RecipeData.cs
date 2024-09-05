@@ -1,23 +1,33 @@
-﻿using Microsoft.EntityFrameworkCore;
-using RecipeLibraryEFCore.Models;
+﻿using AutoMapper;
+using Microsoft.EntityFrameworkCore;
+using RecipeLibraryEFCore.Models.Dtos;
+using RecipeLibraryEFCore.Models.Entities;
 namespace RecipeLibraryEFCore.DataAccess;
 
-public class RecipeData(RecipeContext context) : IRecipeData
+public class RecipeData(RecipeContext context, IMapper mapper) : IRecipeData
 {
     private readonly RecipeContext _context = context;
+    private readonly IMapper _mapper = mapper;
 
     //GET
-    public async Task<Recipe> GetByIdAsync(int id)
+    public async Task<RecipeDto> GetByIdAsync(int id)
     {
         var recipeResponse = await _context.Recipes
             .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
             .FirstOrDefaultAsync(r => r.Id == id);
-        return recipeResponse;
+
+        if (recipeResponse == null)
+        {
+            return null!;
+        }
+
+        RecipeDto createdRecipe = _mapper.Map<RecipeDto>(recipeResponse);
+        return createdRecipe;
     }
 
     //GET
-    public async Task<PaginationResponse<List<Recipe>>> GetAllRecipesAsync(int currentPageNumber, int pageSize)
+    public async Task<PaginationResponse<List<RecipeDto>>> GetAllRecipesAsync(int currentPageNumber, int pageSize)
     {
         int skip = (currentPageNumber - 1) * pageSize;
         int take = pageSize;
@@ -26,16 +36,38 @@ public class RecipeData(RecipeContext context) : IRecipeData
         List<Recipe> recipesResponse = await _context.Recipes
             .Include(r => r.RecipeIngredients)
                 .ThenInclude(ri => ri.Ingredient)
+            .OrderBy(r => r.Id)
             .Take(take)
             .Skip(skip)
             .ToListAsync();
 
-        PaginationResponse<List<Recipe>> paginationResponse = new(totalCount, pageSize, currentPageNumber, recipesResponse);
+        List<RecipeDto> recipeDtos = _mapper.Map<List<RecipeDto>>(recipesResponse);
+
+        PaginationResponse<List<RecipeDto>> paginationResponse = new(totalCount, pageSize, currentPageNumber, recipeDtos);
         return paginationResponse;
     }
 
     //GET
-    public async Task<PaginationResponse<List<Recipe>>> GetByDate(int currentPageNumber, int pageSize)
+    public async Task<PaginationResponse<List<RecipeDto>>> GetByDate(int currentPageNumber, int pageSize)
+    {
+        int skip = (currentPageNumber - 1) * pageSize;
+        int take = pageSize;
+
+        int totalCount = await _context.Recipes.CountAsync();
+        List<Recipe> recipesResponse = await _context.Recipes
+            .Include(r => r.RecipeIngredients)
+                .ThenInclude(ri => ri.Ingredient)
+            .OrderBy(r => r.CreatedOn)
+            .Take(take)
+            .Skip(skip)
+            .ToListAsync();
+        List<RecipeDto> recipeDtos = _mapper.Map<List<RecipeDto>>(recipesResponse);
+        PaginationResponse<List<RecipeDto>> paginationResponse = new(totalCount, pageSize, currentPageNumber, recipeDtos);
+        return paginationResponse;
+    }
+
+    //GET
+    public async Task<PaginationResponse<List<RecipeDto>>> GetByKeyword(string keyword, int currentPageNumber, int pageSize)
     {
         int skip = (currentPageNumber - 1) * pageSize;
         int take = pageSize;
@@ -43,16 +75,11 @@ public class RecipeData(RecipeContext context) : IRecipeData
         throw new NotImplementedException();
     }
 
-    public async Task<PaginationResponse<List<Recipe>>> GetByKeyword(string keyword, int currentPageNumber, int pageSize)
+    //POST
+    public async Task<RecipeDto> AddRecipeAsync(RecipeDto newRecipeDto)
     {
-        int skip = (currentPageNumber - 1) * pageSize;
-        int take = pageSize;
+        Recipe newRecipe = _mapper.Map<Recipe>(newRecipeDto);
 
-        throw new NotImplementedException();
-    }
-
-    public async Task AddRecipeAsync(Recipe newRecipe)
-    {
         foreach (var recipeIngredient in newRecipe.RecipeIngredients)
         {
             // Check if the ingredient already exists
@@ -73,6 +100,16 @@ public class RecipeData(RecipeContext context) : IRecipeData
         }
 
         _context.Recipes.Add(newRecipe);
+        await _context.SaveChangesAsync();
+        RecipeDto createdRecipe = _mapper.Map<RecipeDto>(newRecipe);
+        return createdRecipe;
+    }
+
+    //DELETE
+    public async Task DeleteRecipeAsync(int id)
+    {
+        Recipe recipe = _context.Recipes.Find(id)!;
+        _context.Recipes.Remove(recipe);
         await _context.SaveChangesAsync();
     }
 }
