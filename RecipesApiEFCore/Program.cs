@@ -1,9 +1,11 @@
+using RecipeLibraryEFCore.Models.MappingProfiles;
 using RecipesApiEFCore.DependencyInjectionExtentions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.AddEFCoreServices();
 builder.AddCustomServices();
+builder.Services.AddAutoMapper(typeof(MappingProfile));
 
 builder.Services.AddControllers()
     .AddJsonOptions(options =>
